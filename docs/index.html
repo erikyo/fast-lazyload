@@ -1,0 +1,21 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lazy Load</title>
+</head>
+<body>
+  <script src="../lib/fast-lazyload.js" type="application/javascript"></script>
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random" width="960" height="540" alt="1" />
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random/2000×2000" width="960" height="540" alt="2" />
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random/3000×3000" width="960" height="540" alt="3" />
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random/1500×1500" width="960" height="540" alt="4" />
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random/1500×3000" width="960" height="540" alt="5" />
+  <img src="proxy.jpg" data-lazy="https://source.unsplash.com/random/3000×1500" width="960" height="540" alt="6" />
+  <div style="background-image:url(proxy.jpg); width: 960px; height: 540px" data-lazy="https://source.unsplash.com/random/1000×1000"></div>
+  <div style="background-image:url(proxy.jpg); width: 960px; height: 540px" data-lazy="https://source.unsplash.com/random/5000×5000"></div>
+  <video autoplay muted src="proxy.jpg" data-lazy="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"></video>
+  <video autoplay muted src="proxy.jpg" data-lazy="https://sample-videos.com/video321/mp4/480/big_buck_bunny_480p_5mb.mp4"></video>
+  <video autoplay muted src="proxy.jpg" data-lazy="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_5mb.mp4"></video>
+</body>
+</html>
