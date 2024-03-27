@@ -34,8 +34,11 @@ export function unveil(lazyBackground: HTMLElement) {
     if (lazyBackground.hasAttribute('style') && (lazyBackground as HTMLDivElement).style.backgroundImage) {
         lazyBackground.style.backgroundImage = `url(${lazyBackground.dataset[Options.attribute]})`
     } else {
+        // Add the src to the element
         (lazyBackground as HTMLImageElement).src = lazyBackground.dataset[Options.attribute] as string
-        (lazyBackground as HTMLImageElement).srcset = lazyBackground.dataset[Options.attribute] + '-srcset' as string
+        // If the srcset attribute exists add it
+        if ([Options.attribute] + '-srcset' in lazyBackground.dataset)
+            (lazyBackground as HTMLImageElement).srcset = lazyBackground.dataset[Options.attribute] + '-srcset' as string
     }
     // Remove the data-lazy attribute
     lazyBackground.removeAttribute('data-' + Options.attribute)
@@ -123,18 +126,22 @@ export function fastLazyLoad() {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node: Node) => {
+                        // Check if the node is a lazy element
                         if (node.nodeType === 1 && (node as HTMLElement).matches(`[data-${Options.attribute}]`)) {
+                            /** @var  {HTMLElement | HTMLScriptElement} isElement the element to lazy load */
                             const isElement = node as HTMLElement | HTMLScriptElement
                             if (isElement.nodeName === 'SCRIPT') {
+                                // If the element is a script tag, load the script in the background
                                 lazyscript(isElement as HTMLScriptElement)
                             } else if (isElementInViewport(isElement)) {
+                                // If the element is in the viewport, show it
                                 unveil(isElement)
                                 if (isElement.nodeName === 'IMG' || isElement.nodeName === 'VIDEO') {
                                     // add the fetchpriority="high" attribute to the image/videos if it doesn't have already
                                     isElement.hasAttribute('fetchpriority') || isElement.setAttribute('fetchpriority', 'high')
                                 }
                             } else {
-                                // Observe the newly added node with the IntersectionObserver
+                                // Else observe the newly added node with the IntersectionObserver
                                 lazyObserver.observe(isElement)
                             }
                         }

@@ -35,9 +35,9 @@ This proactive approach not only optimizes loading times but also guarantees a s
 </body>
 ```
 
-## Usage
+## The Markup changes required
 
-Add the `data-lazy` attribute to any element you want to lazy load.
+To get started, add the `data-lazy` attribute to any element you want to lazy load.
 The library will check for the existence of a style attribute with a background image.
 If it does not exist, it will assume the element that requires lazy loading adding or replacing the src.
 
@@ -101,6 +101,7 @@ img.lazy {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
 }
+
 img.lazy.loaded {
     opacity: 1;
     animation: blink 0.5s ease-in-out;
