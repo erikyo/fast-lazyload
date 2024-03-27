@@ -1,11 +1,11 @@
 {
   "name": "fast-lazyload",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "lib/index.js",
+  "main": "lib/fast-lazyload.js",
   "author": "Erik <erik@codekraft.it>",
-  "unpkg": "lib/browser/fast-lazyload.min.js",
-  "jsdelivr": "lib/browser/fast-lazyload.js",
+  "unpkg": "lib/fast-lazyload.js",
+  "jsdelivr": "lib/fast-lazyload.js",
   "license": "MIT",
   "scripts": {
     "watch": "npx esbuild src/index.ts --bundle --minify --watch --outfile=lib/fast-lazyload.js",
