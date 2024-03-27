@@ -1,4 +1,6 @@
 # Fast Lazy Load
+[![](https://img.shields.io/npm/v/gettext-merger.svg?label=npm%20version)](https://www.npmjs.com/package/gettext-merger)
+[![](https://img.shields.io/npm/l/gettext-merger)](https://github.com/erikyo/gettext-merger?tab=GPL-3.0-1-ov-file#readme)
 
 ### Lazy Load Images, Videos, and Backgrounds Using Mutation Observer
 
