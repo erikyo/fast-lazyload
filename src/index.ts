@@ -5,14 +5,15 @@
  * @return {boolean} True if the element is in the viewport
  */
 export function isElementInViewport(el: HTMLElement): boolean {
-    const rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
 
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
+  // Check if any part of the element is in the viewport
+  return (
+    rect.bottom > 0 &&
+    rect.right > 0 &&
+    rect.left < (window.innerWidth || document.documentElement.clientWidth) &&
+    rect.top < (window.innerHeight || document.documentElement.clientHeight)
+  );
 }
 
 /**

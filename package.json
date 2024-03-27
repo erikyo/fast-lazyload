@@ -1,6 +1,6 @@
 {
   "name": "fast-lazyload",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A fast lazyload library that use the intersection observer API and the mutation observer to lazyload images, background images and videos at the speed of light.",
   "main": "lib/fast-lazyload.js",
   "author": "Erik <erik@codekraft.it>",
