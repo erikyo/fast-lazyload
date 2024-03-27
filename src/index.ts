@@ -1,4 +1,12 @@
 /**
+ * If needed, you can set the lazyloadOptions in the window object before the document is loaded to override the default options
+ *
+ * @example window.lazyloadOptions = {loading: 'my-lazy-loading', failed: 'my-lazy-failed', on: 'my-lazy', loaded: 'my-lazy-loaded', attribute: 'lazy' }
+ */
+type LazyloadOptions = {loading: string, failed: string, on: string, loaded: string, attribute: string}
+const Options = 'lazyloadOptions' in window ? window?.lazyloadOptions as LazyloadOptions : {loading: 'lazy-loading', failed: 'lazy-failed', on: 'lazy', loaded: 'lazy-loaded', attribute: 'lazy'}
+
+/**
  * Check if an element is in the viewport
  *
  * @param el {Element} The element to check
@@ -22,12 +30,14 @@ export function isElementInViewport(el: HTMLElement): boolean {
  * @param lazyBackground
  */
 export function unveil(lazyBackground: HTMLElement) {
+    // Add the background image to the element if it exists else add the src
     if (lazyBackground.hasAttribute('style') && (lazyBackground as HTMLDivElement).style.backgroundImage) {
         lazyBackground.style.backgroundImage = `url(${lazyBackground.dataset.lazy})`
-    } else if (lazyBackground.hasAttribute('src')) {
-        (lazyBackground as HTMLImageElement).src = lazyBackground.dataset.lazy
+    } else {
+        (lazyBackground as HTMLImageElement).src = lazyBackground.dataset.lazy as string
     }
-    lazyBackground.removeAttribute('data-lazy')
+    // Remove the data-lazy attribute
+    lazyBackground.removeAttribute('data-' + Options.attribute)
 }
 
 /**
@@ -39,8 +49,21 @@ export function unveil(lazyBackground: HTMLElement) {
 export function lazyLoadBackgrounds(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
+            const target = entry.target as HTMLElement
+            // Adds the 'on' class if the image is in the viewport
+            entry.target.classList.add(Options.on)
+            // Adds the 'on' class after the image is loaded
+            target.addEventListener('load', () => {
+                entry.target.classList.add(Options.loaded)
+                entry.target.classList.remove(Options.loading)
+            })
+            // Adds the 'failed' class if the image fails to load
+            target.addEventListener('error', () => {
+                entry.target.classList.add(Options.failed)
+            })
+            // Adds the 'loading' class until the image is loaded
+            entry.target.classList.add(Options.loading)
             unveil(entry.target as HTMLElement)
-            entry.target.classList.add('lazy-background-on')
             observer.unobserve(entry.target)
         }
     })
@@ -48,32 +71,46 @@ export function lazyLoadBackgrounds(entries: IntersectionObserverEntry[], observ
 
 /**
  * Fallback for browsers that don't support Intersection Observer
- * @param {Element} node The node to fallback
+ * @param {Element} node The node to ensure is visible
  */
 export function fallbackNode(node: HTMLElement) {
     unveil(node)
-    node.classList.remove('lazy-background')
-    node.classList.add('lazy-background-failed')
+    node.classList.add(Options.loaded)
+}
+
+/**
+ * Add a script tag to the page
+ * @param node the script node
+ */
+function lazyscript(node: HTMLScriptElement) {
+    // Lazy load the script in the background after the page is loaded
+    window.addEventListener( 'load', () => {
+        const script = document.createElement('script')
+        // copy the attributes
+        for (let i = 0; i < node.attributes.length; i++) {
+            if (node.attributes[i].name === 'data-' + Options.attribute) script.setAttribute(node.attributes[i].name, node.attributes[i].value)
+        }
+        // set the src
+        script.src = node.dataset.lazy as string
+        // add the script to the page in the same position as the old script node
+        node.parentElement?.insertBefore(script, node)
+        node.remove()
+    } )
 }
 
 /**
  *  Start the lazy loading
- *  - Create an IntersectionObserver instance
- *  - Create a MutationObserver to watch for changes in the DOM
- *  - Start observing the DOM for changes before the page is loaded
- *  - Unveil elements in the viewport
- *  - Observe elements in outside the viewport
- *  - Fallback for browsers that don't support Intersection Observer
+ *
+ *  @type {NodeListOf<Element>} lazyElements The elements to lazy load *
  */
 export function fastLazyLoad() {
-    const lazyElements = document.querySelectorAll('[data-lazy]')
+    const lazyElements = document.querySelectorAll(`[data-${Options.attribute}]`)
 
     /**
      * Create an IntersectionObserver instance and observe the lazy elements
      */
     if ('IntersectionObserver' in window && 'MutationObserver' in window) {
         const lazyObserver = new IntersectionObserver(lazyLoadBackgrounds)
-
 
         // Observe elements with lazy backgrounds
         lazyElements.forEach(lazyBackground => {
@@ -84,13 +121,20 @@ export function fastLazyLoad() {
         const observer = new MutationObserver(mutationsList => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach((node: HTMLElement) => {
-                        if (node.nodeType === 1 && node.matches('[data-lazy]')) {
-                            if (isElementInViewport(node)) {
-                                unveil(node)
+                    mutation.addedNodes.forEach((node: Node) => {
+                        if (node.nodeType === 1 && (node as HTMLElement).matches(`[data-${Options.attribute}]`)) {
+                            const isElement = node as HTMLElement | HTMLScriptElement
+                            if (isElement.nodeName === 'SCRIPT') {
+                                lazyscript(isElement as HTMLScriptElement)
+                            } else if (isElementInViewport(isElement)) {
+                                unveil(isElement)
+                                if (isElement.nodeName === 'IMG' || isElement.nodeName === 'VIDEO') {
+                                    // add the fetchpriority="high" attribute to the image/videos if it doesn't have already
+                                    isElement.hasAttribute( 'fetchpriority' ) || isElement.setAttribute( 'fetchpriority', 'high' )
+                                }
                             } else {
                                 // Observe the newly added node with the IntersectionObserver
-                                lazyObserver.observe(node)
+                                lazyObserver.observe(isElement)
                             }
                         }
                     })
@@ -108,11 +152,11 @@ export function fastLazyLoad() {
          *
          * @type {NodeListOf<Element>}
          */
-        lazyElements.forEach((lazyBackground: HTMLElement) => {
-            fallbackNode(lazyBackground)
+        lazyElements.forEach((lazyBackground) => {
+            fallbackNode(lazyBackground as HTMLElement)
         })
     }
 }
 
-// IIFE to prevent global variables interference
+/* we call the script as an IIFE to prevent global variables pollution */
 (() => fastLazyLoad())()
