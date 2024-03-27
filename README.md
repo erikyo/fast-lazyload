@@ -142,7 +142,3 @@ If you encounter any issues or have suggestions for improvements, feel free to c
 ## License
 
 This script is licensed under the [MIT License](https://opensource.org/licenses/MIT). You are free to modify and distribute it as per the terms of the license.
-
-## Acknowledgments
-
-Special thanks to the developers and contributors of Intersection Observer and Mutation Observer APIs for enabling efficient lazy loading techniques.
