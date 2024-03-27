@@ -121,7 +121,7 @@ audio.lazy.failed {
 - The script is designed to work in modern browsers that support both Intersection Observer and Mutation Observer APIs.
 - A fallback mechanism is provided for browsers that do not support Intersection Observer, ensuring basic functionality across a wide range of browsers.
 
-## How It Works
+## What the script does after being loaded
 
 1. The script initially queries for all elements with the `data-lazy` attribute, which are considered lazy-loadable elements.
 2. If the browser supports Intersection Observer and Mutation Observer, it creates instances of both.
