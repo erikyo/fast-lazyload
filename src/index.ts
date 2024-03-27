@@ -3,7 +3,7 @@
  *
  * @example window.lazyloadOptions = {loading: 'my-lazy-loading', failed: 'my-lazy-failed', on: 'my-lazy', loaded: 'my-lazy-loaded', attribute: 'lazy' }
  */
-type LazyloadOptions = {loading: string, failed: string, on: string, loaded: string, attribute: string}
+type LazyloadOptions = { loading: string, failed: string, on: string, loaded: string, attribute: string }
 const Options = 'lazyloadOptions' in window ? window?.lazyloadOptions as LazyloadOptions : {loading: 'lazy-loading', failed: 'lazy-failed', on: 'lazy', loaded: 'lazy-loaded', attribute: 'lazy'}
 
 /**
@@ -32,9 +32,10 @@ export function isElementInViewport(el: HTMLElement): boolean {
 export function unveil(lazyBackground: HTMLElement) {
     // Add the background image to the element if it exists else add the src
     if (lazyBackground.hasAttribute('style') && (lazyBackground as HTMLDivElement).style.backgroundImage) {
-        lazyBackground.style.backgroundImage = `url(${lazyBackground.dataset.lazy})`
+        lazyBackground.style.backgroundImage = `url(${lazyBackground.dataset[Options.attribute]})`
     } else {
-        (lazyBackground as HTMLImageElement).src = lazyBackground.dataset.lazy as string
+        (lazyBackground as HTMLImageElement).src = lazyBackground.dataset[Options.attribute] as string
+        (lazyBackground as HTMLImageElement).srcset = lazyBackground.dataset[Options.attribute] + '-srcset' as string
     }
     // Remove the data-lazy attribute
     lazyBackground.removeAttribute('data-' + Options.attribute)
@@ -84,18 +85,18 @@ export function fallbackNode(node: HTMLElement) {
  */
 function lazyscript(node: HTMLScriptElement) {
     // Lazy load the script in the background after the page is loaded
-    window.addEventListener( 'load', () => {
+    window.addEventListener('load', () => {
         const script = document.createElement('script')
         // copy the attributes
         for (let i = 0; i < node.attributes.length; i++) {
             if (node.attributes[i].name === 'data-' + Options.attribute) script.setAttribute(node.attributes[i].name, node.attributes[i].value)
         }
         // set the src
-        script.src = node.dataset.lazy as string
+        script.src = node.dataset[Options.attribute] as string
         // add the script to the page in the same position as the old script node
         node.parentElement?.insertBefore(script, node)
         node.remove()
-    } )
+    })
 }
 
 /**
@@ -107,8 +108,8 @@ export function fastLazyLoad() {
     const lazyElements = document.querySelectorAll(`[data-${Options.attribute}]`)
 
     /**
-     * Create an IntersectionObserver instance and observe the lazy elements
-     */
+   * Create an IntersectionObserver instance and observe the lazy elements
+   */
     if ('IntersectionObserver' in window && 'MutationObserver' in window) {
         const lazyObserver = new IntersectionObserver(lazyLoadBackgrounds)
 
@@ -130,7 +131,7 @@ export function fastLazyLoad() {
                                 unveil(isElement)
                                 if (isElement.nodeName === 'IMG' || isElement.nodeName === 'VIDEO') {
                                     // add the fetchpriority="high" attribute to the image/videos if it doesn't have already
-                                    isElement.hasAttribute( 'fetchpriority' ) || isElement.setAttribute( 'fetchpriority', 'high' )
+                                    isElement.hasAttribute('fetchpriority') || isElement.setAttribute('fetchpriority', 'high')
                                 }
                             } else {
                                 // Observe the newly added node with the IntersectionObserver
@@ -143,15 +144,15 @@ export function fastLazyLoad() {
         })
 
         /**
-         * Start observing the DOM
-          */
+     * Start observing the DOM
+     */
         observer.observe(document.body, {childList: true, subtree: true})
     } else {
-        /**
-         * Fallback for browsers that don't support Intersection Observer
-         *
-         * @type {NodeListOf<Element>}
-         */
+    /**
+     * Fallback for browsers that don't support Intersection Observer
+     *
+     * @type {NodeListOf<Element>}
+     */
         lazyElements.forEach((lazyBackground) => {
             fallbackNode(lazyBackground as HTMLElement)
         })
