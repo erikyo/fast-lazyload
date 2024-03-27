@@ -1,15 +1,18 @@
 {
   "name": "fast-lazyload",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "A fast lazyload library that use the intersection observer API and the mutation observer to lazyload images, background images and videos at the speed of light.",
   "main": "lib/fast-lazyload.js",
   "author": "Erik <erik@codekraft.it>",
   "keywords": [
     "lazyload",
     "image",
+    "background-image",
     "video",
+    "LCP",
     "performance",
-    "pagespeed"
+    "pagespeed",
+    "animations"
   ],
   "repository": {
     "type": "git",
@@ -29,6 +32,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
+    "@vitest/coverage-v8": "^1.4.0",
     "eslint": "^8.57.0",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0"
