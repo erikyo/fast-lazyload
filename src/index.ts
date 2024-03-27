@@ -27,21 +27,21 @@ export function isElementInViewport(el: HTMLElement): boolean {
 /**
  * Show the background image
  *
- * @param lazyBackground
+ * @param lazyElement
  */
-export function unveil(lazyBackground: HTMLElement) {
+export function unveil(lazyElement: HTMLElement) {
     // Add the background image to the element if it exists else add the src
-    if (lazyBackground.hasAttribute('style') && (lazyBackground as HTMLDivElement).style.backgroundImage) {
-        lazyBackground.style.backgroundImage = `url(${lazyBackground.dataset[Options.attribute]})`
+    if (lazyElement.hasAttribute('style') && (lazyElement as HTMLDivElement).style.backgroundImage) {
+        lazyElement.style.backgroundImage = `url(${lazyElement.dataset[Options.attribute]})`
     } else {
         // Add the src to the element
-        (lazyBackground as HTMLImageElement).src = lazyBackground.dataset[Options.attribute] as string
+        (lazyElement as HTMLImageElement).src = lazyElement.dataset[Options.attribute] as string
         // If the srcset attribute exists add it
-        if ([Options.attribute] + '-srcset' in lazyBackground.dataset)
-            (lazyBackground as HTMLImageElement).srcset = lazyBackground.dataset[Options.attribute] + '-srcset' as string
+        if ([Options.attribute] + '-srcset' in lazyElement.dataset)
+            (lazyElement as HTMLImageElement).srcset = lazyElement.dataset[Options.attribute] + '-srcset' as string
     }
     // Remove the data-lazy attribute
-    lazyBackground.removeAttribute('data-' + Options.attribute)
+    lazyElement.removeAttribute('data-' + Options.attribute)
 }
 
 /**
@@ -117,8 +117,8 @@ export function fastLazyLoad() {
         const lazyObserver = new IntersectionObserver(lazyLoadBackgrounds)
 
         // Observe elements with lazy backgrounds
-        lazyElements.forEach(lazyBackground => {
-            lazyObserver.observe(lazyBackground)
+        lazyElements.forEach(lazyElement => {
+            lazyObserver.observe(lazyElement)
         })
 
         // Create a MutationObserver to watch for changes in the DOM
@@ -160,8 +160,8 @@ export function fastLazyLoad() {
      *
      * @type {NodeListOf<Element>}
      */
-        lazyElements.forEach((lazyBackground) => {
-            fallbackNode(lazyBackground as HTMLElement)
+        lazyElements.forEach((lazyElement) => {
+            fallbackNode(lazyElement as HTMLElement)
         })
     }
 }
